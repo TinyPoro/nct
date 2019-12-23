@@ -16,9 +16,14 @@ class CreatePlaylistsTable extends Migration
         Schema::create('playlists', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->string("name");
-            $table->string("artist");
-            $table->text("image");
+            $table->text("url");
+            $table->string("md5_url")->unique();
+
+            $table->string("name")->nullable();
+            $table->string("artist")->nullable();
+            $table->text("image")->nullable();
+
+            $table->enum("status", [\App\Models\Playlist::CRAWLED_STATUS, \App\Models\Playlist::NOT_CRAWL_STATUS, \App\Models\Playlist::CRAWLED_ERROR_STATUS])->default(\App\Models\Playlist::NOT_CRAWL_STATUS);
             $table->timestamps();
         });
     }

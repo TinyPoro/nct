@@ -23,7 +23,7 @@ $app = new Laravel\Lumen\Application(
     realpath(__DIR__.'/../')
 );
 
-// $app->withFacades();
+ $app->withFacades();
 
 // $app->withEloquent();
 
@@ -97,6 +97,19 @@ $app->router->group([
     'namespace' => 'App\Http\Controllers',
 ], function ($router) {
     require __DIR__.'/../routes/web.php';
+});
+
+/*
+|--------------------------------------------------------------------------
+| Include all configs (by SK)
+|--------------------------------------------------------------------------
+|
+| Here we include all php files that exists in config directory
+|
+*/
+collect(scandir(__DIR__ . '/../config'))->each(function ($item) use
+($app) {
+    $app->configure(basename($item, '.php'));
 });
 
 return $app;

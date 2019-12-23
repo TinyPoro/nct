@@ -1,0 +1,11 @@
+apps:
+## DECOMPRESS
+  - script : ./artisan
+    name     : 'odoo_contact'
+    interpreter : /usr/bin/php
+    cwd : ./
+    exec_mode: fork
+    args : odoo:contact
+    autorestart : true
+    restart_delay: 900000
+    log_date_format : YYYYMMDDHHmm

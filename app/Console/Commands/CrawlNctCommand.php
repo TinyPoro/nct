@@ -2,10 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Main\PuPHPeteerCrawler;
 use App\Models\Playlist;
 use Illuminate\Console\Command;
-use Nesk\Puphpeteer\Puppeteer;
-use Nesk\Rialto\Data\JsFunction;
 
 class CrawlNctCommand extends Command
 {
@@ -24,25 +23,24 @@ class CrawlNctCommand extends Command
      */
     protected $description = 'Command description';
 
-
     /**
-     * Puppeteer browser
+     * PuPHPeteerCrawler
      *
-     * @var string
+     * @var PuPHPeteerCrawler
      */
-    private $browser;
+    private $puPHPeteerCrawler;
 
     /**
      * Create a new command instance.
      *
+     * @param PuPHPeteerCrawler $puPHPeteerCrawler
      * @return void
      */
-    public function __construct()
+    public function __construct(PuPHPeteerCrawler $puPHPeteerCrawler)
     {
         parent::__construct();
 
-        $puppeteer = new Puppeteer();
-        $this->browser = $puppeteer->launch();
+        $this->puPHPeteerCrawler = $puPHPeteerCrawler;
     }
 
     /**
@@ -54,28 +52,19 @@ class CrawlNctCommand extends Command
     {
         $url = $this->argument('url');
 
-        $page = $this->browser->newPage();
-        $page->goto($url);
+        $page = $this->puPHPeteerCrawler->createNewPage();
+
+        $this->puPHPeteerCrawler->visit($page, $url);
 
         $albumUrlSelector = config('crawl.nct.album_url_selector');
 
-        $albumUrls = $page->evaluate(JsFunction::createWithBody("
-            let albumUrls = [];
-            
-            let albums = document.querySelectorAll('" . $albumUrlSelector . "')
-            
-            albums.forEach((album) => {
-                albumUrls.push(album.href);
-            });
-            
-            return albumUrls;
-        "));
+        $albumUrls = $this->puPHPeteerCrawler->getElementsAttribute($page, $albumUrlSelector, "href");
 
         foreach ($albumUrls as $albumUrl) {
             $md5AlbumUrl = md5($albumUrl);
 
             try{
-                $playlist = Playlist::create([
+                Playlist::create([
                     'url' => $albumUrl,
                     'md5_url' => $md5AlbumUrl,
                 ]);

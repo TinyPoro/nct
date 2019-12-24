@@ -24,6 +24,8 @@ class CreateMediasTable extends Migration
             $table->text("url");
             $table->text("image");
 
+            $table->dateTime("expired_url");
+
             $table->timestamps();
         });
 

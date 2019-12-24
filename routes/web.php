@@ -16,6 +16,7 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('playlist', "PlaylistController@index");
+
 $router->get('media/{mediaId}/download', [
     "as" => "media.download",
     "uses" => "MediaController@download"
@@ -30,3 +31,5 @@ $router->get('playlist/medias/json', [
     "as" => "playlist.medias.json",
     "uses" => "PlaylistController@getMediasJson"
 ]);
+
+$router->get('playlist/crawl', "PlaylistController@crawlNct");

@@ -24,6 +24,7 @@ class Media extends Model
         'artists',
         'url',
         'image',
+        'expired_url',
     ];
 
     protected $table = "medias";
@@ -67,13 +68,27 @@ class Media extends Model
 
     public static function getNctMediaTypeByUrl($url)
     {
-        if (preg_match("/nhaccuatui.com/bai-hat", $url)) {
+        if (preg_match("/nhaccuatui.com\/bai-hat/", $url)) {
             return self::AUDIO_TYPE;
-        } elseif (preg_match("/nhaccuatui.com/video", $url)) {
+        } elseif (preg_match("/nhaccuatui.com\/video/", $url)) {
             return self::VIDEO_TYPE;
         } else {
             return self::UNDEFINED_TYPE;
         }
+    }
+
+    public static function getExpiredDatetimeFromMediaDownloadableUrl($url)
+    {
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+
+        $expiredTimestamp = array_get($query, 'e', null);
+
+        if (is_null($expiredTimestamp)) {
+            throw new \Exception("Can not get timestamp from url!");
+        }
+
+        return date('Y-m-d H:i:s', $expiredTimestamp);
     }
 
     public static function getNctDownloadableLinkFromKey($type, $key)

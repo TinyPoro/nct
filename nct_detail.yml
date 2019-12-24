@@ -1,11 +1,11 @@
 apps:
 ## DECOMPRESS
   - script : ./artisan
-    name     : 'odoo_contact'
-    interpreter : /usr/bin/php
+    name     : 'crawl_detail:nct'
+    interpreter : /usr/local/bin/php
     cwd : ./
     exec_mode: fork
-    args : odoo:contact
+    args : crawl_detail:nct
     autorestart : true
-    restart_delay: 900000
+    restart_delay: 600000
     log_date_format : YYYYMMDDHHmm

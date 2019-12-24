@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CrawlNctPlaylistJob;
 use App\Models\Playlist;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\View;
 
 class PlaylistController extends Controller
@@ -60,5 +62,18 @@ class PlaylistController extends Controller
             'playlistId' => $playlistId,
             'medias' => $medias
             ])->render());
+    }
+
+    public function crawlNct(Request $request)
+    {
+        try {
+            $url = $request->get('url');
+
+            Queue::push(new CrawlNctPlaylistJob($url));
+
+            return response()->json('Success');
+        } catch (\Exception $e) {
+            return response()->json('Fail');
+        }
     }
 }

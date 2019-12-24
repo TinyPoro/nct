@@ -87,6 +87,7 @@ class CrawlNctDetailCommand extends Command
                             $mediaArtists = array_map('trim', $mediaArtists);
                             $mediaImage = $mediaProperties["image"];
                             $mediaUrl = $mediaProperties["url"];
+                            $mediaExpiredUrlDatetime = Media::getExpiredDatetimeFromMediaDownloadableUrl($mediaUrl);
 
                             $media = Media::create([
                                 'key' => $mediaKey,
@@ -95,6 +96,7 @@ class CrawlNctDetailCommand extends Command
                                 'artists' => implode(", ", $mediaArtists),
                                 'url' => $mediaUrl,
                                 'image' => $mediaImage,
+                                'expired_url' => $mediaExpiredUrlDatetime,
                             ]);
 
                             $newMediaItems[] = $media->id;
@@ -110,6 +112,8 @@ class CrawlNctDetailCommand extends Command
 
                         $playlistArtist = $playlistArtist + $mediaArtists;
                     }
+
+                    if(count($newMediaItems) === 0) throw new \Exception("Can not crawl any media!");
 
                     $playlist->medias()->syncWithoutDetaching($newMediaItems);
 

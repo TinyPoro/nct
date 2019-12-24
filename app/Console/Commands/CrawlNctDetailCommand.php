@@ -66,16 +66,22 @@ class CrawlNctDetailCommand extends Command
                     $playlistArtist = [];
                     $playlistImage = "";
 
-                    $mediaKeys = $this->puPHPeteerCrawler->getNctAlbumMediasKeys($page);
+                    $mediaKeysAndUrls = $this->puPHPeteerCrawler->getNctAlbumMediasKeysAndUrls($page);
 
                     $newMediaItems = [];
 
-                    foreach ($mediaKeys as $mediaKey) {
+                    foreach ($mediaKeysAndUrls as $mediaKeyAndUrl) {
                         try {
+                            $mediaKey = $mediaKeyAndUrl['key'];
+                            $mediaWebUrl = $mediaKeyAndUrl['url'];
 
-                            $mediaProperties = $this->puPHPeteerCrawler->getMediaPropertiesByKey($mediaKey);
+                            if (!$mediaKey or !$mediaWebUrl) {
+                                continue;
+                            }
+                            $mediaType = Media::getNctMediaTypeByUrl($mediaWebUrl);
 
-                            $mediaType = $mediaProperties["type"];
+                            $mediaProperties = $this->puPHPeteerCrawler->getMediaPropertiesByKey($mediaType, $mediaKey);
+
                             $mediaTitle = $mediaProperties["title"];
                             $mediaArtists = explode(",", $mediaProperties["artists"]);
                             $mediaArtists = array_map('trim', $mediaArtists);
@@ -84,7 +90,7 @@ class CrawlNctDetailCommand extends Command
 
                             $media = Media::create([
                                 'key' => $mediaKey,
-                                'type' => Media::getMediaTypeCode($mediaType),
+                                'type' => $mediaType,
                                 'title' => $mediaTitle,
                                 'artists' => implode(", ", $mediaArtists),
                                 'url' => $mediaUrl,

@@ -10,12 +10,7 @@ class Media extends Model
 
     const VIDEO_TYPE = 0;
     const AUDIO_TYPE = 1;
-
-    public static $mediaTypeCodeMapping = [
-        "http://schema.org/Unknown" => self::VIDEO_TYPE,
-        "http://schema.org/MusicRecording" => self::AUDIO_TYPE
-    ];
-
+    const UNDEFINED_TYPE = -1;
 
     /**
      * The attributes that are mass assignable.
@@ -39,42 +34,61 @@ class Media extends Model
     |--------------------------------------------------------------------------
     */
 
-    public static function getMediaTypeCode($mediaTypeString)
-    {
-        return array_get(self::$mediaTypeCodeMapping, $mediaTypeString, self::VIDEO_TYPE);
-    }
-
     /**
-     * Get Nct Download media url. Only support 128kbps for this version.
+     * Get Nct Download media url. Only support 128kbps(audio) and 480kbps(video) for this version.
      *
      * @var string
      * @var integer
      *
      * @return string
      */
-    public static function getNctDownloadMediaUrlByKey($key, $quality = 128)
+    public static function getNctDownloadMediaUrlByKey($type, $key)
     {
-        return "https://www.nhaccuatui.com/download/song/$key" . "_" . $quality;
+        if ($type === self::AUDIO_TYPE) {
+            return "https://www.nhaccuatui.com/download/song/$key" . "_128";
+        } elseif ($type === self::VIDEO_TYPE) {
+            return "https://www.nhaccuatui.com/download/video/$key" . "_480";
+        } else {
+            return "";
+        }
+
     }
 
-    public static function getNctMediaUrlByKey($key)
+    public static function getNctMediaWebUrlByKey($type, $key)
     {
-        return "https://www.nhaccuatui.com/bai-hat/a.$key.html";
+        if ($type === self::AUDIO_TYPE) {
+            return "https://www.nhaccuatui.com/bai-hat/a.$key.html";
+        } elseif ($type === self::VIDEO_TYPE) {
+            return "https://www.nhaccuatui.com/video/a.$key.html";
+        } else {
+            return "";
+        }
     }
 
-    public static function getNctDownloadableLinkFromKey($key)
+    public static function getNctMediaTypeByUrl($url)
+    {
+        if (preg_match("/nhaccuatui.com/bai-hat", $url)) {
+            return self::AUDIO_TYPE;
+        } elseif (preg_match("/nhaccuatui.com/video", $url)) {
+            return self::VIDEO_TYPE;
+        } else {
+            return self::UNDEFINED_TYPE;
+        }
+    }
+
+    public static function getNctDownloadableLinkFromKey($type, $key)
     {
         $client = new Client();
 
-        $downloadMediaUrl = self::getNctDownloadMediaUrlByKey($key);
-        $mediaUrl = self::getNctMediaUrlByKey($key);
+        $downloadMediaUrl = self::getNctDownloadMediaUrlByKey($type, $key);
+        $mediaWebUrl = self::getNctMediaWebUrlByKey($type, $key);
 
         $res = $client->request(
             'GET',
             $downloadMediaUrl,
             [
                 'headers' => [
-                    'referer' => $mediaUrl
+                    'referer' => $mediaWebUrl
                 ]
             ]
         );
@@ -98,7 +112,7 @@ class Media extends Model
 
     public function getNewDownloadableUrl(){
         try {
-            $this->url = self::getNctDownloadableLinkFromKey($this->key);
+            $this->url = self::getNctDownloadableLinkFromKey($this->type, $this->key);
         } catch (\Exception $e) {
             self::destroy($this->id);
         }
@@ -126,7 +140,13 @@ class Media extends Model
     */
 
     public function getTypeTextAttribute(){
-        return ($this->type === self::VIDEO_TYPE) ? "Video" : "Audio";
+        if ($this->type === self::VIDEO_TYPE) {
+            return "Video";
+        } elseif ($this->type === self::AUDIO_TYPE) {
+            return "Audio";
+        } else {
+            return "N/A";
+        }
     }
 
     /*

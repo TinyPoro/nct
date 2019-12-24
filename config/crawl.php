@@ -8,7 +8,7 @@ return [
         ],
         "media" => [
             "key_selector" => ".list_song_in_album li",
-            "type_selector" => ".box-left",
+            "url_selector" => ".item_content a.name_song",
             "title_selector" => ".name_title h1",
             "artist_selector" => ".name-singer",
             "image_selector" => "link[rel=\"image_src\"]",

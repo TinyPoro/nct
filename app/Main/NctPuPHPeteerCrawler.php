@@ -11,6 +11,7 @@ namespace App\Main;
 
 use App\Models\Media;
 use GuzzleHttp\Client;
+use Nesk\Rialto\Data\JsFunction;
 
 class NctPuPHPeteerCrawler extends PuPHPeteerCrawler
 {
@@ -33,17 +34,14 @@ class NctPuPHPeteerCrawler extends PuPHPeteerCrawler
         return $this->getElementAttribute($page, $playlistNameSelector, "innerText");
     }
 
-    public function getMediaPropertiesByKey($key)
+    public function getMediaPropertiesByKey($type, $key)
     {
         $mediaProperties = [];
 
         $page = $this->createNewPage();
 
-        $mediaUrl = Media::getNctMediaUrlByKey($key);
-        $page->goto($mediaUrl);
-
-        $mediaTypeSelector = config('crawl.nct.media.type_selector');
-        $mediaProperties["type"] = $this->getElementAttribute($page, $mediaTypeSelector, "getAttribute('itemtype')");
+        $mediaWebUrl = Media::getNctMediaWebUrlByKey($type, $key);
+        $page->goto($mediaWebUrl);
 
         $mediaTitleSelector = config('crawl.nct.media.title_selector');
         $mediaProperties["title"] = $this->getElementAttribute($page, $mediaTitleSelector, "innerText");
@@ -54,19 +52,32 @@ class NctPuPHPeteerCrawler extends PuPHPeteerCrawler
         $mediaImageSelector = config('crawl.nct.media.image_selector');
         $mediaProperties["image"] = $this->getElementAttribute($page, $mediaImageSelector, "href");
 
-        $mediaProperties["url"] = Media::getNctDownloadableLinkFromKey($key);
+        $mediaProperties["url"] = Media::getNctDownloadableLinkFromKey($type, $key);
 
         return $mediaProperties;
     }
 
 
 
-    public function getNctAlbumMediasKeys($page)
+    public function getNctAlbumMediasKeysAndUrls($page)
     {
         $mediaKeySelector = config('crawl.nct.media.key_selector');
+        $urlKeySelector = config('crawl.nct.media.url_selector');
 
-        return $this->getElementsAttribute($page, $mediaKeySelector, "getAttribute('key')");
-
-
+        return $page->evaluate(JsFunction::createWithBody("
+            let results = [];
+            
+            let elements = document.querySelectorAll('" . $mediaKeySelector . "')
+            
+            elements.forEach((element) => {
+                let url_element = document.querySelector('" . $urlKeySelector . "')
+                results.push({
+                    'key': element.getAttribute('key'),
+                    'url': (null === url_element) ? '' : url_element.getAttribute('href')
+                });
+            });
+            
+            return results;
+        "));
     }
 }

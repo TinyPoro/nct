@@ -24,6 +24,8 @@ class Playlist extends Model
         'status'
     ];
 
+    protected $table = "playlists";
+
     /*
     |--------------------------------------------------------------------------
     | FUNCTIONS
@@ -42,7 +44,7 @@ class Playlist extends Model
     */
 
     public function medias(){
-        return $this->hasMany('App\Models\Media');
+        return $this->belongsToMany('App\Models\Media');
     }
 
     /*

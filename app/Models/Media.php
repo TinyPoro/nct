@@ -23,6 +23,8 @@ class Media extends Model
         'image',
     ];
 
+    protected $table = "medias";
+
     /*
    |--------------------------------------------------------------------------
    | FUNCTIONS
@@ -35,8 +37,8 @@ class Media extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function playlist(){
-        return $this->belongsTo('App\Models\Playlist');
+    public function playlists(){
+        return $this->belongsToMany('App\Models\Playlist');
     }
 
     /*

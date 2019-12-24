@@ -24,10 +24,11 @@ class CreateMediasTable extends Migration
             $table->text("url");
             $table->text("image");
 
-            $table->unsignedInteger("playlist_id");
-
             $table->timestamps();
         });
+
+        \DB::statement('ALTER TABLE medias ADD FULLTEXT full_media_title(title)');
+        \DB::statement('ALTER TABLE medias ADD FULLTEXT full_media_artists(artists)');
     }
 
     /**

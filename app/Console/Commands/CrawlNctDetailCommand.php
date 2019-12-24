@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Main\NctPuPHPeteerCrawler;
+use App\Models\Media;
 use App\Models\Playlist;
 use Illuminate\Console\Command;
 
@@ -62,17 +63,55 @@ class CrawlNctDetailCommand extends Command
                     $page->goto($url);
 
                     $playlistName = $this->puPHPeteerCrawler->getPlaylistName($page);
-                    $playlistArtist = "";
+                    $playlistArtist = [];
                     $playlistImage = "";
 
-                    $mediaKeys = $this->puPHPeteerCrawler->getNctAlbumSongsKeys($page);
+                    $mediaKeys = $this->puPHPeteerCrawler->getNctAlbumMediasKeys($page);
+
+                    $newMediaItems = [];
 
                     foreach ($mediaKeys as $mediaKey) {
-                        dd($mediaKey);
+                        try {
+
+                            $mediaProperties = $this->puPHPeteerCrawler->getMediaPropertiesByKey($mediaKey);
+
+                            $mediaType = $mediaProperties["type"];
+                            $mediaTitle = $mediaProperties["title"];
+                            $mediaArtists = explode(",", $mediaProperties["artists"]);
+                            $mediaArtists = array_map('trim', $mediaArtists);
+                            $mediaImage = $mediaProperties["image"];
+                            $mediaUrl = $mediaProperties["url"];
+
+                            $media = Media::create([
+                                'key' => $mediaKey,
+                                'type' => $mediaType,
+                                'title' => $mediaTitle,
+                                'artists' => implode(", ", $mediaArtists),
+                                'url' => $mediaUrl,
+                                'image' => $mediaImage,
+                            ]);
+
+                            $newMediaItems[] = $media;
+                        } catch (\Exception $e) {
+                            \Log::error("Error at crawl_detail:nct - create media item: " . $e->getMessage());
+
+                            continue;
+                        }
+
+                        if (!$playlistImage) {
+                            $playlistImage = $mediaImage;
+                        }
+
+                        $playlistArtist = $playlistArtist + $mediaArtists;
                     }
 
+                    $playlist->medias()->syncWithoutDetaching($newMediaItems);
 
-                    dd("done");
+                    $playlistArtist = array_unique($playlistArtist);
+
+                    $playlist->name = $playlistName;
+                    $playlist->artist = implode(", ", $playlistArtist);
+                    $playlist->image = $playlistImage;
                     $playlist->status = Playlist::CRAWLED_STATUS;
                     $playlist->save();
                     \DB::commit();

@@ -1,0 +1,11 @@
+apps:
+## DECOMPRESS
+  - script : ./artisan
+    name     : 'crawl_detail:nct'
+    interpreter : /usr/local/bin/php
+    cwd : ./
+    exec_mode: fork
+    args : media:expired_url
+    autorestart : true
+    restart_delay: 1800000
+    log_date_format : YYYYMMDDHHmm

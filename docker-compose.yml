@@ -11,9 +11,11 @@ services:
     volumes:
       - ./storage:/var/www/storage
     env_file: '.env.prod'
+    command: php-fpm
     environment:
       - "DB_HOST=database"
       - "REDIS_HOST=cache"
+    restart: always
 
   # The Web Server
   web:
@@ -23,6 +25,8 @@ services:
       dockerfile: development/web.dockerfile
     volumes:
       - ./storage/logs/:/var/log/nginx
+    command: nginx -g "daemon off;"
+    restart: always
     ports:
       - 8990:80
 
@@ -37,8 +41,22 @@ services:
       - "MYSQL_USER=phpmyadmin"
       - "MYSQL_PASSWORD=phpmyadmin"
       - "MYSQL_ROOT_PASSWORD=root."
+    restart: always
     ports:
       - 8991:3306
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      container_name: phpmyadmin
+      environment:
+       - "PMA_ARBITRARY=1"
+       - "PMA_HOST=mysql_database"
+       - "PMA_PORT=3306"
+       - "PMA_USER=phpmyadmin"
+       - "PMA_PASSWORD=phpmyadmin"
+      restart: always
+      ports:
+       - 8992:80
 
 volumes:
   dbdata:

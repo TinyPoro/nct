@@ -26,7 +26,7 @@ class MediaController extends Controller
     {
         try {
             $media = Media::findOrFail($mediaId);
-            $downloadPath = storage_path($media->id);
+            $downloadPath = storage_path($media->title . "-" . $media->id);
             $downloadDestination = fopen($downloadPath, 'w');
         } catch (\Exception $e) {
             return response()->json($e->getMessage());

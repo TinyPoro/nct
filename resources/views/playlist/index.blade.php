@@ -15,7 +15,7 @@
                 @foreach($playlists as $playlist)
                     <tr>
                         <th scope="row">{{$playlist->id}}</th>
-                        <td><a href="{{route('playlist.medias', ['playlist_id' => $playlist->id])}}" target="_blank">{{$playlist->name}}</a></td>
+                        <td><a href="{{route('playlist.medias', ['playlistId' => $playlist->id])}}" target="_blank">{{$playlist->name}}</a></td>
                         <td>{{$playlist->artist}}</td>
                         <td><a href="{{$playlist->image}}" target="_blank">{{$playlist->image}}</a></td>
                     </tr>

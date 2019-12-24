@@ -16,7 +16,7 @@
             <th scope="row">{{$media->id}}</th>
             <td>{{$media->key}}</td>
             <td>{{$media->type_text}}</td>
-            <td><a href="{{route('media.download', ['media_id' => $media->id])}}" target="_blank">{{$media->title}}</a></td>
+            <td><a href="{{route('media.download', ['mediaId' => $media->id])}}" target="_blank">{{$media->title}}</a></td>
             <td>{{$media->artists}}</td>
             <td><a href="{{$media->image}}" target="_blank">{{$media->image}}</a></td>
         </tr>

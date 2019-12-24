@@ -2,7 +2,7 @@ apps:
 ## DECOMPRESS
   - script : ./artisan
     name     : 'queue_work'
-    interpreter : /usr/bin/php
+    interpreter : /usr/local/bin/php
     cwd : ./
     exec_mode: fork
     args : queue:work

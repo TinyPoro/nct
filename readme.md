@@ -1,21 +1,75 @@
-# Lumen PHP Framework
+# NhacCuaTui Crawl by Lumen PHP Framework
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://poser.pugx.org/laravel/lumen-framework/d/total.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://poser.pugx.org/laravel/lumen-framework/v/stable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Unstable Version](https://poser.pugx.org/laravel/lumen-framework/v/unstable.svg)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://poser.pugx.org/laravel/lumen-framework/license.svg)](https://packagist.org/packages/laravel/lumen-framework)
+**Author:** ngophuongtuan@gmail.com 
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+## Technology
 
-## Official Documentation
+- Lumen
+- Mysql
+- Nginx
+- Puppeteer
 
-Documentation for the framework can be found on the [Lumen website](http://lumen.laravel.com/docs).
+## Setup
 
-## Security Vulnerabilities
+1. Check volumns path in `docker-compose.yml`, but be sure that volumns path must be shared with docker.
+```$xslt
+#  The Application
+  app:
+    container_name: crawl_nct
+    build:
+      context: ./
+      dockerfile: development/app.dockerfile
+    volumes:
+      - ./storage:/var/www/storage  --> Changeit
+    env_file: '.env.prod'
+    environment:
+      - "DB_HOST=database"
+      - "REDIS_HOST=cache"
+      
+      
+ # The Web Server
+  web:
+    container_name: nginx_server
+    build:
+      context: ./
+      dockerfile: development/web.dockerfile
+    volumes:
+      - ./storage/logs/:/var/log/nginx  --> Changeit
+    ports:
+      - 8990:80
+```
+2. Update mysql database connection in `docker-compose.yml` and `.env.prod`, but be sure 
+that `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` in `docker-compose.yml` must equal to
+`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` in `.env.prod` respectively:
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+```$xslt
+# docker-composer.yml
+  database:
+    container_name: mysql_database
+    image: mysql:5.7
+    volumes:
+      - dbdata:/var/lib/mysql
+    environment:
+      - "MYSQL_DATABASE=nct"
+      - "MYSQL_USER=phpmyadmin"
+      - "MYSQL_PASSWORD=phpmyadmin"
+      - "MYSQL_ROOT_PASSWORD=root."
+    ports:
+      - 8991:3306
+      
+# .env.prod
+DB_CONNECTION=mysql
+DB_HOST=mysql_database
+DB_PORT=3306
+DB_DATABASE=nct
+DB_USERNAME=phpmyadmin
+DB_PASSWORD=phpmyadmin
 
-## License
+```
 
-The Lumen framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
+3. Run docker-compose
+```$xslt
+docker-compose up -d --build database && docker-compose up -d --build app && docker-compose up -d --build web
+```
+
+4. Check 

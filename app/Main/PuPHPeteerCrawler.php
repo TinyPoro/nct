@@ -24,7 +24,9 @@ abstract class PuPHPeteerCrawler
     public function __construct()
     {
         $puppeteer = new Puppeteer();
-        $this->browser = $puppeteer->launch();
+        $this->browser = $puppeteer->launch([
+            'args' => ['--no-sandbox', '--disable-setuid-sandbox']
+        ]);
     }
 
     public function createNewPage()

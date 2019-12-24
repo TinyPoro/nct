@@ -128,6 +128,8 @@ class Media extends Model
     public function getNewDownloadableUrl(){
         try {
             $this->url = self::getNctDownloadableLinkFromKey($this->type, $this->key);
+            $mediaExpiredUrlDatetime = Media::getExpiredDatetimeFromMediaDownloadableUrl($this->url);
+            $this->expired_url = $mediaExpiredUrlDatetime;
         } catch (\Exception $e) {
             self::destroy($this->id);
         }

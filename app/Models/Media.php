@@ -38,7 +38,7 @@ class Media extends Model
     */
 
     public function playlists(){
-        return $this->belongsToMany('App\Models\Playlist');
+        return $this->belongsToMany(Playlist::class, 'media_playlist', 'media_id', 'playlist_id');
     }
 
     /*

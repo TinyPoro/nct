@@ -91,7 +91,7 @@ class CrawlNctDetailCommand extends Command
                                 'image' => $mediaImage,
                             ]);
 
-                            $newMediaItems[] = $media;
+                            $newMediaItems[] = $media->id;
                         } catch (\Exception $e) {
                             \Log::error("Error at crawl_detail:nct - create media item: " . $e->getMessage());
 

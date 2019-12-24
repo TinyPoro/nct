@@ -84,7 +84,7 @@ class CrawlNctDetailCommand extends Command
 
                             $media = Media::create([
                                 'key' => $mediaKey,
-                                'type' => $mediaType,
+                                'type' => Media::getMediaTypeCode($mediaType),
                                 'title' => $mediaTitle,
                                 'artists' => implode(", ", $mediaArtists),
                                 'url' => $mediaUrl,

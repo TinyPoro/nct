@@ -24,4 +24,15 @@ class PlaylistController extends Controller
             'playlists' => $playlists
         ]);
     }
+
+    public function showMedias($playlist_id)
+    {
+        $playlists = Playlist::findOrFail($playlist_id);
+
+        $medias = $playlists->medias;
+
+        return view('playlist.medias', [
+            'medias' => $medias
+        ]);
+    }
 }

@@ -16,3 +16,12 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('playlist', "PlaylistController@index");
+$router->get('media/{media_id}/download', [
+    "as" => "media.download",
+    "uses" => "MediaController@download"
+]);
+
+$router->get('playlist/{playlist_id}/medias', [
+    "as" => "playlist.medias",
+    "uses" => "PlaylistController@showMedias"
+]);

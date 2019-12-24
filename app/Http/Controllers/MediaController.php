@@ -22,10 +22,10 @@ class MediaController extends Controller
         $this->client = new Client();
     }
 
-    public function download($media_id)
+    public function download($mediaId)
     {
         try {
-            $media = Media::findOrFail($media_id);
+            $media = Media::findOrFail($mediaId);
             $downloadPath = storage_path($media->id);
             $downloadDestination = fopen($downloadPath, 'w');
         } catch (\Exception $e) {

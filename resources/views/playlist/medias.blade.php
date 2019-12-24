@@ -2,36 +2,42 @@
 
 @section('content')
     <div class="container">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th scope="col">Key</th>
-                <th scope="col">Loại</th>
-                <th scope="col">Tên</th>
-                <th scope="col">Nghệ sĩ</th>
-                <th scope="col">Link ảnh</th>
-            </tr>
-            </thead>
-            <tbody>
-                @foreach($medias as $media)
-                    <tr>
-                        <th scope="row">{{$media->id}}</th>
-                        <td>{{$media->key}}</td>
-                        <td>{{$media->type_text}}</td>
-                        <td><a href="{{route('media.download', ['media_id' => $media->id])}}" target="_blank">{{$media->title}}</a></td>
-                        <td>{{$media->artists}}</td>
-                        <td><a href="{{$media->image}}" target="_blank">{{$media->image}}</a></td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="form-group">
+            <label for="search">Tìm kiếm:</label>
+            <input type="text" class="form-control" id="search">
+        </div>
 
-        {{ $medias->links() }}
-
+        <div id="media_table">
+            @include('playlist.media_table')
+        </div>
     </div>
 @endsection
 
 @section('after_scripts')
+    <script>
+        $('#search').on('input', () => {
+            let search = $('#search').val();
+            let playlistId = $('#playlistId').val();
 
+            let url = '{{route('playlist.medias.json')}}'
+            let data = {
+                'playlistId': playlistId,
+                'search': search
+            }
+
+            $.ajax({
+                url: url,
+                type: 'GET',
+                data: data,
+                success: function(response)
+                {
+                    $('#media_table').html(response)
+                },
+                error: function(xhr)
+                {
+                    console.log(xhr.responseText)
+                }
+            });
+        })
+    </script>
 @endsection

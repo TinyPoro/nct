@@ -16,12 +16,17 @@ $router->get('/', function () use ($router) {
 });
 
 $router->get('playlist', "PlaylistController@index");
-$router->get('media/{media_id}/download', [
+$router->get('media/{mediaId}/download', [
     "as" => "media.download",
     "uses" => "MediaController@download"
 ]);
 
-$router->get('playlist/{playlist_id}/medias', [
+$router->get('playlist/{playlistId}/medias', [
     "as" => "playlist.medias",
     "uses" => "PlaylistController@showMedias"
+]);
+
+$router->get('playlist/medias/json', [
+    "as" => "playlist.medias.json",
+    "uses" => "PlaylistController@getMediasJson"
 ]);

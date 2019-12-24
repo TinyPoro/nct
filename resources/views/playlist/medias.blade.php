@@ -26,6 +26,9 @@
                 @endforeach
             </tbody>
         </table>
+
+        {{ $medias->links() }}
+
     </div>
 @endsection
 

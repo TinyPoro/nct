@@ -29,7 +29,7 @@ class PlaylistController extends Controller
     {
         $playlists = Playlist::findOrFail($playlist_id);
 
-        $medias = $playlists->medias;
+        $medias = $playlists->medias()->paginate(15);
 
         return view('playlist.medias', [
             'medias' => $medias

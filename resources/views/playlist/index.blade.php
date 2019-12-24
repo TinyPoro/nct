@@ -21,9 +21,10 @@
                     </tr>
                 @endforeach
             </tbody>
-
-            {{ $playlists->links() }}
         </table>
+
+        {{ $playlists->links() }}
+
     </div>
 @endsection
 

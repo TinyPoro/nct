@@ -17,7 +17,7 @@ class CreateMediasTable extends Migration
             $table->increments('id');
 
             $table->string("key")->unique();
-            $table->enum("type", [\App\Models\Media::VIDEO_TYPE, \App\Models\Media::AUDIO_TYPE]);
+            $table->integer("type");
 
             $table->string("title");
             $table->string("artists");

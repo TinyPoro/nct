@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Main\PuPHPeteerCrawler;
+use App\Main\NctPuPHPeteerCrawler;
 use App\Models\Playlist;
 use Illuminate\Console\Command;
 
@@ -26,17 +26,17 @@ class CrawlNctCommand extends Command
     /**
      * PuPHPeteerCrawler
      *
-     * @var PuPHPeteerCrawler
+     * @var NctPuPHPeteerCrawler
      */
     private $puPHPeteerCrawler;
 
     /**
      * Create a new command instance.
      *
-     * @param PuPHPeteerCrawler $puPHPeteerCrawler
+     * @param NctPuPHPeteerCrawler $puPHPeteerCrawler
      * @return void
      */
-    public function __construct(PuPHPeteerCrawler $puPHPeteerCrawler)
+    public function __construct(NctPuPHPeteerCrawler $puPHPeteerCrawler)
     {
         parent::__construct();
 
@@ -53,23 +53,20 @@ class CrawlNctCommand extends Command
         $url = $this->argument('url');
 
         $page = $this->puPHPeteerCrawler->createNewPage();
+        $page->goto($url);
 
-        $this->puPHPeteerCrawler->visit($page, $url);
+        $playlistUrls = $this->puPHPeteerCrawler->getPlaylistUrls($page);
 
-        $albumUrlSelector = config('crawl.nct.album_url_selector');
-
-        $albumUrls = $this->puPHPeteerCrawler->getElementsAttribute($page, $albumUrlSelector, "href");
-
-        foreach ($albumUrls as $albumUrl) {
-            $md5AlbumUrl = md5($albumUrl);
+        foreach ($playlistUrls as $playlistUrl) {
+            $md5PlaylistUrl = md5($playlistUrl);
 
             try{
                 Playlist::create([
-                    'url' => $albumUrl,
-                    'md5_url' => $md5AlbumUrl,
+                    'url' => $playlistUrl,
+                    'md5_url' => $md5PlaylistUrl,
                 ]);
             } catch (\Exception $e) {
-                \Log::error($e->getMessage());
+                \Log::error("Error at crawl:nct command: " . $e->getMessage());
             }
         }
 

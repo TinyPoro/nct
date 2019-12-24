@@ -23,7 +23,7 @@ class CreatePlaylistsTable extends Migration
             $table->string("artist")->nullable();
             $table->text("image")->nullable();
 
-            $table->enum("status", [\App\Models\Playlist::CRAWLED_STATUS, \App\Models\Playlist::NOT_CRAWL_STATUS, \App\Models\Playlist::CRAWLED_ERROR_STATUS])->default(\App\Models\Playlist::NOT_CRAWL_STATUS);
+            $table->integer("status")->default(\App\Models\Playlist::NOT_CRAWL_STATUS);
             $table->timestamps();
         });
     }

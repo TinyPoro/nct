@@ -12,7 +12,7 @@ namespace App\Main;
 use Nesk\Puphpeteer\Puppeteer;
 use Nesk\Rialto\Data\JsFunction;
 
-class PuPHPeteerCrawler
+abstract class PuPHPeteerCrawler
 {
     /**
      * Puppeteer browser
@@ -32,11 +32,6 @@ class PuPHPeteerCrawler
         return $this->browser->newPage();
     }
 
-    public function visit($page, $url)
-    {
-        $page->goto($url);
-    }
-
     public function getElementsAttribute($page, $selector, $attribute)
     {
         return $page->evaluate(JsFunction::createWithBody("
@@ -50,5 +45,14 @@ class PuPHPeteerCrawler
             
             return results;
         "));
+    }
+
+    public function getElementAttribute($page, $selector, $attribute)
+    {
+        return $page->evaluate(JsFunction::createWithBody("
+            let element = document.querySelector('" . $selector . "')
+            
+            return (null === element) ? '' : element." . $attribute
+        ));
     }
 }

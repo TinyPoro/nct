@@ -143,4 +143,16 @@ that `MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD` in `docker-compose.yml` mu
 ## Update.
 1. PHPMyAdmin
     Recently, i add service `phpmyadmin` to make database display easier on web. Be sure that, `phpmyadmin`'s
-    environment database connection information matching with database connection information in service `database`.   
+    environment database connection information matching with database connection information in service `database`.
+    
+## Question
+1. Could we crawl hot video items from this source https://www.tiktok.com/vi/trending in a similar way? How and/or Why?
+
+- Yes. 
+- First, we can get web url and the key of the video item by selector `.video-feed-item ._ratio_wrapper>a` 
+- Then we can go to the web url and get the video src and download it.
+- Updating: get new video src when the old one expired, use the key to get new one, the data response look like this
+    ```angularjs
+        {"@context":"http://schema.org/","@type":"VideoObject","name":"The Rock(@therock) on TikTok: @imkevinhart is getting nothing but coal this year. #badsanta","description":"The Rock(@therock) has created a short video on TikTok with music All I Want for Christmas is YOU. @imkevinhart is getting nothing but coal this year. #badsanta","thumbnailUrl":["https://p16.muscdn.com/obj/tos-maliva-p-0068/c29d8b3c139a72d27dd2bd870b049f8c","https://p16.muscdn.com/obj/tos-maliva-p-0068/688146df3ce74a5fa737f6cd4ef0130d_1576801099"],"uploadDate":"2019-12-20T00:18:17.000Z","contentUrl":"https://v16.muscdn.com/51af0b41f16f3dd5a973e2fc4ad3cff5/5e02d5de/video/tos/maliva/tos-maliva-v-0068/ea38bddece7949f9a375d426a1c8d775/?a=1233&br=3452&bt=1726&cr=0&cs=0&dr=0&ds=3&er=&l=201912242121560101151761380FA658C4&lr=tiktok_m&qs=0&rc=anQ3aHR2NGo0cTMzZTczM0ApNjpkZGlnOmRoNzxnaDlnZWdzbmlzc20xM3JfLS1hMTZzc2AuMzJhYy9fNTBjNjFhYGA6Yw%3D%3D","embedUrl":"https://www.tiktok.com/embed/6772309129626160389","keywords":"therock, The Rock, badsanta,크리스마스우와","commentCount":"35526","interactionCount":"13153636","duration":"PT10S","audio":{"name":"All I Want for Christmas is YOU - plottwist","author":"plottwist","mainEntityOfPage":{"@type":"ItemPage","@id":"https://www.tiktok.com/music/All-I-Want-for-Christmas-is-YOU-172594401737605120"}},"width":720,"height":1280,"mainEntityOfPage":{"@type":"ItemPage","@id":"https://www.tiktok.com/@therock/video/6772309129626160389"},"author":{"@type":"Person","name":"The Rock","alternateName":"therock","mainEntityOfPage":{"@type":"ProfilePage","@id":"https://www.tiktok.com/@therock"}}}
+    ```
+  New video src is stored in `contentUrl`.    
